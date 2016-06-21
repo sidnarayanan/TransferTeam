@@ -47,6 +47,7 @@ class TMDBDataset():
   def __init__(self,n):
     self.name = n
     self.blocks = {}
+    self.nFiles = 0
   def __str__(self):
     sites = {}
     for block,obj in self.blocks.iteritems():
@@ -64,7 +65,7 @@ class TMDBDataset():
     for site in sites:
       if sites[site].averageETA!=None:
         sites[site].averageETA /= sites[site].counter
-    s = self.name + ' is waiting on %i sites\n'%len(sites)
+    s = self.name + ' (%i files) is waiting on %i sites\n'%(self.nFiles,len(sites))
     for sitename,site in sites.iteritems():
       s += '\t' + sitename + ': '
       if site.averageETA!=None:
@@ -105,8 +106,16 @@ class TMDBFile():
 
 stuckLFNs = []
 
+# sites = ['T2_CH_CERN']
+sites = None # no filtering
+
 for dsRaw in datasets:
-  ds = dsRaw.strip()
+  line = dsRaw.strip().split()
+  ds = line[0]
+  if len(line)>1:
+    # sites = ['nonsense']
+    sites = [line[1]]
+  print sites
   dsInstance = TMDBDataset(ds)
   bad = {}
   if debug: print 'investigating',ds
@@ -118,7 +127,13 @@ for dsRaw in datasets:
   for block in missingBlocks:
     for missingFile in block['file']:
       if len(missingFile['missing'])>0:
-        stuckLFNs.append(missingFile['name'])
+	if sites!=None:
+          for m in missingFile['missing']:
+              if m['node_name'] in sites:
+                  stuckLFNs.append(missingFile['name'])
+                  break
+        else:
+	    stuckLFNs.append(missingFile['name'])
         try:
           f = bad[missingFile['name']]
         except KeyError:
@@ -137,6 +152,7 @@ for dsRaw in datasets:
       block_ = TMDBBlock(b['name'])
       for f in b['file']:
         file2block[f['lfn']] = b['name']
+  dsInstance.nFiles = len(file2block)
 
   cmd = 'wget --no-check-certificate -O '+tmpdir+'ba.json "https://cmsweb.cern.ch/phedex/datasvc/json/prod/blockarrive?dataset='+ds+'" > /dev/null 2>/dev/null'
   if debug: print cmd
@@ -156,7 +172,7 @@ for dsRaw in datasets:
     dsInstance.blocks[block].files[lfn] = f
     blockArrive = blockArrives[block]
     for s in f.missing:
-      f.missing[s] = (blockArrive[sub('Buffer','MSS',s)]['basis'],blockArrive[sub('Buffer','MSS',s)]['eta'])
+      f.missing[s] = (blockArrive[sub('Export','MSS',sub('Buffer','MSS',s))]['basis'],blockArrive[sub('Export','MSS',sub('Buffer','MSS',s))]['eta'])
 
   print dsInstance
 
