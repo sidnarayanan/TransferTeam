@@ -32,6 +32,7 @@ for line in [sys.argv[1]]:
     if dsname not in allblocks:
       allblocks[dsname] = set([])
       blocksondisk[dsname] = set([])
+      custodial[dsname] = 'UNKNOWN'
     allblocks[dsname].add((name,vol))
     for r in b['replica']:
       if 'MSS' in r['node'] or 'Buffer' in r['node']:
