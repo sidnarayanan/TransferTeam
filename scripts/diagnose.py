@@ -108,8 +108,8 @@ class TMDBFile():
 stuckLFNs = []
 removableLFNs = []
 
-# sites = ['T2_CH_CERN']
-sites = None # no filtering
+sites = ['T1_US_FNAL_Disk','T2_US_MIT','T1_FR_CCIN2P3_Disk']
+# sites = None # no filtering
 
 for dsRaw in datasets:
   line = dsRaw.strip().split()
