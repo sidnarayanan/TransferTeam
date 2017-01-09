@@ -19,6 +19,8 @@ for line in [sys.argv[1]]:
   if line.strip()=='':
     continue
 
+  print 'PATTERN=%s'%line.strip()
+
   blockpattern = '/%s/RunIISummer15wmLHEGS-MCRUN2_71_V1-v1*/GEN-SIM%%23*'%(line.strip())
 
   cmd = 'wget -O repl.json --no-check-certificate "https://cmsweb.cern.ch/phedex/datasvc/json/prod/blockreplicas?block=%s&complete=y"'%(blockpattern)
