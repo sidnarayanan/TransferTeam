@@ -20,7 +20,7 @@ basis = {
   2 : 'at least one file is waiting for rerouting',
 }
 
-verbose=False
+verbose=True
 debug=False
 threshold = 86400*7*2
 
@@ -127,13 +127,13 @@ for dsRaw in datasets:
   for block in missingBlocks:
     for missingFile in block['file']:
       if len(missingFile['missing'])>0:
-	if sites!=None:
+        if sites!=None:
           for m in missingFile['missing']:
               if m['node_name'] in sites:
                   stuckLFNs.append(missingFile['name'])
                   break
         else:
-	    stuckLFNs.append(missingFile['name'])
+          stuckLFNs.append(missingFile['name'])
         try:
           f = bad[missingFile['name']]
         except KeyError:
