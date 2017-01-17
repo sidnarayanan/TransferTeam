@@ -86,6 +86,8 @@ class TMDBBlock():
     sites = {}
     for lfn,obj in self.files.iteritems():
       for site,info in obj.missing.iteritems():
+        if info==None:
+          continue
         if site not in sites:
           sites[site] = Site()
         sites[site].bases[info[0]] += 1
@@ -108,7 +110,7 @@ class TMDBFile():
 stuckLFNs = []
 removableLFNs = []
 
-# sites = ['T2_CH_CERN']
+#sites = ['T1_US_FNAL_Disk','T2_US_MIT','T1_FR_CCIN2P3_Disk']
 sites = None # no filtering
 
 for dsRaw in datasets:
@@ -178,7 +180,8 @@ for dsRaw in datasets:
     dsInstance.blocks[block].files[lfn] = f
     blockArrive = blockArrives[block]
     for s in f.missing:
-      f.missing[s] = (blockArrive[sub('Export','MSS',sub('Buffer','MSS',s))]['basis'],blockArrive[sub('Export','MSS',sub('Buffer','MSS',s))]['eta'])
+      if (sites==None) or (s in sites):
+        f.missing[s] = (blockArrive[sub('Export','MSS',sub('Buffer','MSS',s))]['basis'],blockArrive[sub('Export','MSS',sub('Buffer','MSS',s))]['eta'])
 
   print dsInstance
 
