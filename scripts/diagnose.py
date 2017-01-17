@@ -48,6 +48,7 @@ class TMDBDataset():
     self.name = n
     self.blocks = {}
     self.nFiles = 0
+    self.stuckFiles = []
   def __str__(self):
     sites = {}
     for block,obj in self.blocks.iteritems():
@@ -65,7 +66,7 @@ class TMDBDataset():
     for site in sites:
       if sites[site].averageETA!=None:
         sites[site].averageETA /= sites[site].counter
-    s = self.name + ' (%i files) is waiting on %i sites\n'%(self.nFiles,len(sites))
+    s = self.name + '\n\t (%i files) is waiting on %i sites because of %i missing files\n'%(self.nFiles,len(sites),len(self.stuckFiles))
     for sitename,site in sites.iteritems():
       s += '\t' + sitename + ': '
       if site.averageETA!=None:
@@ -105,6 +106,7 @@ class TMDBFile():
     self.complete = []
 
 stuckLFNs = []
+removableLFNs = []
 
 # sites = ['T2_CH_CERN']
 sites = None # no filtering
@@ -115,7 +117,6 @@ for dsRaw in datasets:
   if len(line)>1:
     # sites = ['nonsense']
     sites = [line[1]]
-  print sites
   dsInstance = TMDBDataset(ds)
   bad = {}
   if debug: print 'investigating',ds
@@ -130,10 +131,10 @@ for dsRaw in datasets:
         if sites!=None:
           for m in missingFile['missing']:
               if m['node_name'] in sites:
-                  stuckLFNs.append(missingFile['name'])
+                  dsInstance.stuckFiles.append(missingFile['name'])
                   break
         else:
-          stuckLFNs.append(missingFile['name'])
+          dsInstance.stuckFiles.append(missingFile['name'])
         try:
           f = bad[missingFile['name']]
         except KeyError:
@@ -141,6 +142,8 @@ for dsRaw in datasets:
           bad[missingFile['name']] = f
         for m in missingFile['missing']:
           f.missing[m['node_name']] = None
+
+  stuckLFNs += dsInstance.stuckFiles
 
   cmd = 'wget --no-check-certificate -O '+tmpdir+'data.json "https://cmsweb.cern.ch/phedex/datasvc/json/prod/data?dataset='+ds+'" > /dev/null 2>/dev/null'
   if debug: print cmd
@@ -153,6 +156,9 @@ for dsRaw in datasets:
       for f in b['file']:
         file2block[f['lfn']] = b['name']
   dsInstance.nFiles = len(file2block)
+
+  if len(dsInstance.stuckFiles) <= 0.02 * dsInstance.nFiles:
+    removableLFNs += dsInstance.stuckFiles
 
   cmd = 'wget --no-check-certificate -O '+tmpdir+'ba.json "https://cmsweb.cern.ch/phedex/datasvc/json/prod/blockarrive?dataset='+ds+'" > /dev/null 2>/dev/null'
   if debug: print cmd
@@ -177,5 +183,5 @@ for dsRaw in datasets:
   print dsInstance
 
 if verbose:
-  for lfn in stuckLFNs:
+  for lfn in set(removableLFNs):
     print lfn
