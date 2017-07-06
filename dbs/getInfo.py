@@ -8,6 +8,7 @@ from dbs.apis.dbsClient import *
 try:
     opts, args = getopt.getopt(sys.argv[1:], "", ["method=","option=","return="])
 except getopt.GetoptError:
+    print "usage: python ~/TransferTeam/dbs/getInfo.py --method files --return block_name,logical_file_name,check_sum,adler32,file_size --option logical_file_name:xxxx.root"
     sys.exit(2)
 
 method = None
@@ -52,10 +53,12 @@ try:
     for info in infos:
         for attr in attrs.split(','):
             if "date" in attr:
-                print time.strftime('%Y%m%d', time.gmtime(info[attr])),
+                if not info[attr]:
+                    print 'NULL'
+                else:
+                    print time.strftime('%Y%m%d %H:%M', time.gmtime(info[attr])),
             else:
                 print info[attr],
-        print
 except Exception as e:
     print >> sys.stderr, e
 

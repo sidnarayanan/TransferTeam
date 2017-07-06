@@ -1,6 +1,6 @@
 #!/bin/bash
 
-src=/afs/cern.ch/user/m/mtaze/TransferTeam/consistency_check/SCC
+src=${HOME}/TransferTeam/consistency_check/SCC
 db=""
 node=""
 dump=""

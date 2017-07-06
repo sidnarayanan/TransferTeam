@@ -7,7 +7,8 @@ from re import sub
 from time import time,gmtime,strftime
 
 dsname = argv[1]
-system('wget --no-check-certificate -O /tmp/requestlist.json https://cmsweb.cern.ch/phedex/datasvc/json/prod/requestlist?dataset=%s > /dev/null 2>&1'%dsname)
+cmd = 'wget --no-check-certificate -O /tmp/requestlist.json https://cmsweb.cern.ch/phedex/datasvc/json/prod/requestlist?dataset=%s > /dev/null 2>&1'%dsname
+system(cmd)
 with open('/tmp/requestlist.json') as jsonfile:
   payload = json.load(jsonfile)['phedex']['request']
 requests = {}
@@ -22,3 +23,4 @@ for ts in sorted(requests):
     print '[%15s]: %25s transferred to %20s (%s)'%(strtime,request[3],request[0],request[2])
   elif request[1]=='delete':
     print '[%15s]: %25s     deleted at %20s (%s)'%(strtime,request[3],request[0],request[2])
+

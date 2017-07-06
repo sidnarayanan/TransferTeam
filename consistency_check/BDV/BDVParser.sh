@@ -1,6 +1,6 @@
 #!/bin/bash
 
-src=/afs/cern.ch/user/m/mtaze/TransferTeam/consistency_check/BDV
+src=$PWD
 node=""
 db=""
 test="size"
@@ -71,7 +71,8 @@ rm -f $out_lfnlist $out_global $out_local
 touch $out_global $out_local
 
 # get failed blocks
-cat $out_report | grep 'Fail /' | grep " $test " | tr -s ' ' | cut -d ' ' -f 13 | sort | uniq | egrep -iv "test|backfill|penguins|bunnies" > $out_blocklist
+cat $out_report | grep 'Fail /' | grep " $test " | tr -s ' ' | cut -d ' ' -f 13 | sort | uniq | egrep -iv "backfill|penguins|bunnies" > $out_blocklist
+#cat $out_report | grep 'Fail /' | grep " $test " | tr -s ' ' | cut -d ' ' -f 13 | sort | uniq | egrep -iv "test|backfill|penguins|bunnies" > $out_blocklist
 
 # get failed files in these blocks
 counter=0

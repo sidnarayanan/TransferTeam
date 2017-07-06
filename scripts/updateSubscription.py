@@ -18,14 +18,14 @@ def updateSubscription(block, node, priority):
     c.setopt(pycurl.SSLKEY,proxyfile)
     c.setopt(pycurl.SSLCERT,proxyfile)
     
-    url='https://cmsweb.cern.ch/phedex/datasvc/perl/prod/updatesubscription?nocache=1&block=' + block.replace('#','%23',1) + '&node=' + node + '&priority=' + priority
-    #url='https://cmsweb.cern.ch/phedex/datasvc/perl/prod/updatesubscription?nocache=1&block=' + block.replace('#','%23',1) + '&node=' + node + '&suspend_until=' + priority
+    #url='https://cmsweb.cern.ch/phedex/datasvc/perl/prod/updatesubscription?nocache=1&block=' + block.replace('#','%23',1) + '&node=' + node + '&priority=' + priority
+    url='https://cmsweb.cern.ch/phedex/datasvc/perl/prod/updatesubscription?nocache=1&block=' + block.replace('#','%23',1) + '&node=' + node + '&suspend_until=' + priority
     print url,pycurl.URL 
     #if debug == True : print url,pycurl.URL 
  
     c.setopt(pycurl.URL, url)
-    post_data = {'block': block , 'node': node , 'priority': priority}
-    #post_data = {'block': block , 'node': node , 'suspend_until': priority}
+    #post_data = {'block': block , 'node': node , 'priority': priority}
+    post_data = {'block': block , 'node': node , 'suspend_until': priority}
 
     postfields = urllib.urlencode(post_data)
     c.setopt(c.POSTFIELDS, postfields)
@@ -41,11 +41,13 @@ def updateSubscriptionDS(dataset, node, priority):
     c.setopt(pycurl.SSLKEY,proxyfile)
     c.setopt(pycurl.SSLCERT,proxyfile)
     
-    url='https://cmsweb.cern.ch/phedex/datasvc/perl/prod/updatesubscription?nocache=1&dataset=' + dataset + '&node=' + node + '&priority=' + priority
+    #url='https://cmsweb.cern.ch/phedex/datasvc/perl/prod/updatesubscription?nocache=1&dataset=' + dataset + '&node=' + node + '&priority=' + priority
+    url='https://cmsweb.cern.ch/phedex/datasvc/perl/prod/updatesubscription?nocache=1&dataset=' + dataset + '&node=' + node + '&suspend_until=' + priority
     print url,pycurl.URL 
  
     c.setopt(pycurl.URL, url)
-    post_data = {'dataset': dataset , 'node': node , 'priority': priority}
+    #post_data = {'dataset': dataset , 'node': node , 'priority': priority}
+    post_data = {'dataset': dataset , 'node': node , 'suspend_until': priority}
 
     postfields = urllib.urlencode(post_data)
     c.setopt(c.POSTFIELDS, postfields)

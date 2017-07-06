@@ -336,8 +336,9 @@ def phedexPost(url, request, params):
     request: the request suffix url
     params: a dictionary with the POST parameters
     """
-    conn = httplib.HTTPSConnection(url, cert_file = os.getenv('X509_USER_PROXY'), 
-                                        key_file = os.getenv('X509_USER_PROXY'))
+    proxy = '/tmp/x509up_u%i'%(os.getuid())
+    conn = httplib.HTTPSConnection(url, cert_file = proxy, 
+                                        key_file = proxy)
     encodedParams = urllib.urlencode(params, doseq=True)
     #encodedParams = json.dumps(params)
     r1 = conn.request("POST", request, encodedParams)
@@ -387,14 +388,14 @@ def makeMoveRequest(url, site, datasets, comments, priority='high',custodial='n'
     response = phedexPost(url, "/phedex/datasvc/json/prod/subscribe", params)
     return response
 
-def makeReplicaRequest(url, site,datasets, comments, priority='high',custodial='n'): # priority used to be normal
+def makeReplicaRequest(url, site,datasets, comments, priority='high',custodial='n', group='AnalysisOps'): # priority used to be normal
     dataXML = createXML(datasets)
     params = { "node" : site,
                 "data" : dataXML,
-                "group": "DataOps",
+                "group": group,
                 "priority": priority,
                 "custodial":custodial,
-                "request_only":"y",
+                "request_only":"n",
                 "move":"n",
                 "no_mail":"n",
                 "comments":comments}

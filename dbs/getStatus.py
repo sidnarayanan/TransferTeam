@@ -20,6 +20,8 @@ for opt, arg in opts :
     if opt == "--dataset":
         dataset = True
 
+print inputFile
+
 if inputFile == None:
     print 'Please specify input file with --input'
     sys.exit(2)

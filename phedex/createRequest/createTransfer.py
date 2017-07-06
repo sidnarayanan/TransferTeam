@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import json
 import urllib2,urllib, httplib, sys, re, os
 import phedexClient as phd
@@ -10,9 +12,10 @@ from optparse import OptionParser
 """
 
 test = False
-priority = 'normal'
-custodial = 'y'
+priority = 'low'
+custodial = 'n'
 url = 'cmsweb.cern.ch'
+group = 'FacOps'
 
 def submitTransferRequests(dataset_list, nodeName, chunk_size):
         
@@ -25,7 +28,7 @@ def submitTransferRequests(dataset_list, nodeName, chunk_size):
         print '\n'.join(chunk)
 
         if not test:
-            r = phd.makeReplicaRequest(url, nodeName, chunk, "Transfer Team is subscribing datasets without custodial replica", priority, custodial)
+            r = phd.makeReplicaRequest(url, nodeName, chunk, "Transfer Team is subscribing datasets without custodial replica", priority, custodial, group=group)
             if ("phedex" in r and "request_created" in r["phedex"]):
                 reqid = r["phedex"]["request_created"][0]["id"]
                 transferRequests.append(reqid)
